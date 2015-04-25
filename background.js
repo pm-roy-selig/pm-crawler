@@ -4,10 +4,41 @@ var popupDoc,
     visitedLinks = {},
     unvisitedLinks = {};
 
+
+
 function popupLoaded( document ) {
 
     popupDoc = document;
+    chrome.tabs.getSelected(null, setDefaultUrl_);
 
+}
+
+
+/**
+ * Initialize the popup's fields.
+ * Callback from chrome.tabs.getSelected.
+ * @param {Tab} The currently selected tab.
+ * @private
+ */
+function setDefaultUrl_(tab) {
+    // Use the currently selected tab's URL as a start point.
+    var url;
+    if (tab && tab.url && tab.url.match(/^\s*https?:\/\//i)) {
+        url = tab.url;
+    } else {
+        url = 'http://www.example.com/';
+    }
+
+    baseURL = url.split( "?" )[0];
+    var i  = baseURL.lastIndexOf("/");
+
+    baseURL = baseURL.substr(0, i + 1);
+    qs = url.split( "?" )[1] || "";
+    matches = qs.match(/opString=([^&]*)/);
+    auth = matches[1];
+
+    popupDoc.getElementById('baseURL').value = baseURL;
+    popupDoc.getElementById('auth').value = auth;
 }
 
 function popupGo( _url, _auth ) {
