@@ -1,6 +1,7 @@
 var popupDoc,
     baseURL,
     auth,
+    url,
     visitedLinks = {},
     unvisitedLinks = {};
 
@@ -22,7 +23,7 @@ function popupLoaded( document ) {
  */
 function setDefaultUrl_(tab) {
     // Use the currently selected tab's URL as a start point.
-    var url;
+    url;
     if (tab && tab.url && tab.url.match(/^\s*https?:\/\//i)) {
         url = tab.url;
     } else {
@@ -41,12 +42,10 @@ function setDefaultUrl_(tab) {
     popupDoc.getElementById('auth').value = auth;
 }
 
-function popupGo( _url, _auth ) {
+function popupGo( ) {
 
-    baseURL = _url;
-    auth= _auth;
-
-    get( baseURL, parsePage );
+    if(url && baseURL && auth)
+        get( url, parsePage );
 
 }
 
@@ -85,16 +84,18 @@ function get( url, callback ) {
     };
     httpRequest.open( 'GET', url, true );
     httpRequest.send();
-
 }
 
 function resolveURL( links, url ){
 
     if( url.indexOf( "javascript:" ) === 0 ) {
         try {
-            fullyResovedURL = eval( url );
-            links.push(fullyResolvedURL);
-        }catch(e){ console.log() }
+
+            var action = url.match(/javascript:(.*?)/gim)[1];
+            alert(url);
+            //fullyResovedURL = eval( url );
+            //links.push(fullyResolvedURL);
+        }catch(e){ console.log(e) }
     }
 
 }
